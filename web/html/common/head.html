@@ -9,6 +9,11 @@
   <link rel="stylesheet" href="{{ .base_path }}assets/ant-design-vue/antd.min.css">
   <link rel="stylesheet" href="{{ .base_path }}assets/element-ui/theme-chalk/display.css">
   <link rel="stylesheet" href="{{ .base_path }}assets/css/custom.min.css?{{ .cur_ver }}">
+  <meta name="description" content="Xray panel supporting multi-protocol multi-user expire day & traffic & ip limit (Vmess & Vless & Trojan & ShadowSocks & Wireguard)">
+  <meta name="title" content="{{ .host }} - {{ i18n .title}}">
+  <meta property="og:title" content="3X-UI">
+  <meta property="og:image" content="{{ .base_path }}assets/image/icon.png">
+  <meta property="og:url" content="https://github.com/MHSanaei/3x-ui">
   <style>
     [v-cloak] {
       display: none;
@@ -28,7 +33,7 @@
         'Segoe UI Emoji', 'Segoe UI Symbol';
     }
   </style>
-  <title>{{ .host }}-{{ i18n .title}}</title>
+  <title>{{ .host }} - {{ i18n .title}}</title>
 </head>
 <div id="message"></div>
 {{end}}
