@@ -1,9 +1,9 @@
-name: Release 3X-UI
+name: Build Personal 3X-UI
 
 on:
   push:
-    tags:
-      - "*"
+    branches:
+      - personal
   workflow_dispatch:
 
 jobs:
@@ -73,7 +73,7 @@ jobs:
             export CC=s390x-linux-gnu-gcc
           fi
           go build -o xui-release -v main.go
-          
+
           mkdir x-ui
           cp xui-release x-ui/
           cp x-ui.service x-ui/
@@ -81,7 +81,7 @@ jobs:
           mv x-ui/xui-release x-ui/x-ui
           mkdir x-ui/bin
           cd x-ui/bin
-          
+
           # Download dependencies
           Xray_URL="https://github.com/XTLS/Xray-core/releases/download/v1.8.13/"
           if [ "${{ matrix.platform }}" == "amd64" ]; then
@@ -122,15 +122,12 @@ jobs:
           wget -O geosite_VN.dat https://github.com/vuong2023/vn-v2ray-rules/releases/latest/download/geosite.dat
           mv xray xray-linux-${{ matrix.platform }}
           cd ../..
-          
+
       - name: Package
         run: tar -zcvf x-ui-linux-${{ matrix.platform }}.tar.gz x-ui
-        
-      - name: Upload files to GH release
-        uses: svenstaro/upload-release-action@v2
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.ref }}
-          file: x-ui-linux-${{ matrix.platform }}.tar.gz
-          asset_name: x-ui-linux-${{ matrix.platform }}.tar.gz
-          prerelease: true
+          name: x-ui-linux-${{ matrix.platform }}
+          path: x-ui-linux-${{ matrix.platform }}.tar.gz
