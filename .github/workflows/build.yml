@@ -1,0 +1,104 @@
+name: Build Personal 3X-UI
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        platform:
+          - amd64
+          - arm64
+    continue-on-error: true # Delete me!
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Apply personal patches
+        uses: fregante/setup-git-user@v2
+      - run: |
+          curl -sSL ${{ secrets.PRIVATE_PATCHES }} | git am
+          echo `date +%y.%m.%d` > config/version
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          if [ "${{ matrix.platform }}" == "arm64" ]; then
+            sudo apt install gcc-aarch64-linux-gnu
+          fi
+
+      - name: Build x-ui
+        run: |
+          export CGO_ENABLED=1
+          export GOOS=linux
+          export GOARCH=${{ matrix.platform }}
+          if [ "${{ matrix.platform }}" == "arm64" ]; then
+            export GOARCH=arm64
+            export CC=aarch64-linux-gnu-gcc
+          fi
+          go build -ldflags "-s -w" -o xui-release -v main.go
+
+      - name: Final build step
+        run: |
+          mkdir -p x-ui/bin
+          mv xui-release x-ui/x-ui
+          cp x-ui.service x-ui.sh x-ui/
+
+          # Download Xray dependencies
+          Xray_URL="https://github.com/XTLS/Xray-core/releases/download/v25.6.8/"
+          case "${{ matrix.platform }}" in
+            amd64)  Xray_File="Xray-linux-64.zip" ;;
+            arm64)  Xray_File="Xray-linux-arm64-v8a.zip" ;;
+            *)      echo "Unsupported platform"; exit 1 ;;
+          esac
+          cd x-ui/bin
+          wget -q "${Xray_URL}${Xray_File}" && unzip "${Xray_File}"
+          rm -f README.md LICENSE geoip.dat geosite.dat "${Xray_File}"
+          mv xray "xray-linux-${{ matrix.platform }}"
+
+          wget -qO geoip.dat https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat
+          wget -qO geosite.dat https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat
+          wget -qO geoip_IR.dat https://github.com/chocolate4u/Iran-v2ray-rules/releases/latest/download/geoip.dat
+          wget -qO geosite_IR.dat https://github.com/chocolate4u/Iran-v2ray-rules/releases/latest/download/geosite.dat
+          wget -qO geoip_VN.dat https://github.com/vuong2023/vn-v2ray-rules/releases/latest/download/geoip.dat
+          wget -qO geosite_VN.dat https://github.com/vuong2023/vn-v2ray-rules/releases/latest/download/geosite.dat
+
+          cd ../..
+
+      - name: Compress binaries
+        uses: najahiiii/upx-action@master
+        with:
+          files: |
+              x-ui/x-ui
+              x-ui/bin/xray-linux-${{ matrix.platform }}
+          args: --best --lzma
+          strip: false
+
+      - name: Final packages
+        run: |
+          tar -zcf x-ui-linux-${{ matrix.platform }}-${{ github.ref_name }}.tar.gz x-ui
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: x-ui-linux-${{ matrix.platform }}-${{ github.ref_name }}
+          path: ./x-ui-linux-${{ matrix.platform }}-${{ github.ref_name }}.tar.gz
+
+      - name: Upload files to GH release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref }}
+          file: x-ui-linux-${{ matrix.platform }}-${{ github.ref_name }}.tar.gz
+          asset_name: x-ui-linux-${{ matrix.platform }}-${{ github.ref_name }}.tar.gz
+          prerelease: true
