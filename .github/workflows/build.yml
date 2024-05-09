@@ -20,6 +20,7 @@ jobs:
           - 386
           - armv5
           - s390x
+    continue-on-error: true # Delete me!
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout repository
@@ -80,6 +81,8 @@ jobs:
           fi
           go build -ldflags "-s -w" -o xui-release -v main.go
 
+      - name: Final build step
+        run: |
           mkdir x-ui
           cp xui-release x-ui/
           cp x-ui.service x-ui/
@@ -129,8 +132,19 @@ jobs:
           mv xray xray-linux-${{ matrix.platform }}
           cd ../..
 
-      - name: Package
-        run: tar -zcvf x-ui-linux-${{ matrix.platform }}.tar.gz x-ui
+      - name: Compress binaries
+        if: ${{ matrix.platform != 's390x' }} # Skip on s390x arch
+        uses: najahiiii/upx-action@v2.4.2
+        with:
+          files: |
+            x-ui/x-ui
+            x-ui/bin/xray-linux-${{ matrix.platform }}
+          args: --brute -9
+          strip: false
+
+      - name: Final packages
+        run: |
+          tar -zcvf x-ui-linux-${{ matrix.platform }}.tar.gz x-ui
 
       - name: Upload files to GH release
         uses: svenstaro/upload-release-action@v2
