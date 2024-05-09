@@ -2,6 +2,8 @@ name: Build Personal 3X-UI
 
 on:
   push:
+    tags:
+      - "*"
     branches:
       - personal
   workflow_dispatch:
@@ -76,7 +78,7 @@ jobs:
             export GOARCH=s390x
             export CC=s390x-linux-gnu-gcc
           fi
-          go build -o xui-release -v main.go
+          go build -ldflags "-s -w" -o xui-release -v main.go
 
           mkdir x-ui
           cp xui-release x-ui/
@@ -129,6 +131,17 @@ jobs:
 
       - name: Package
         run: tar -zcvf x-ui-linux-${{ matrix.platform }}.tar.gz x-ui
+
+      - name: Upload files to GH release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref }}
+          file: x-ui-linux-${{ matrix.platform }}.tar.gz
+          target_commit: ${{ github.ref }}
+          asset_name: x-ui-linux-${{ matrix.platform }}.tar.gz
+          overwrite: true
+          prerelease: false
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
