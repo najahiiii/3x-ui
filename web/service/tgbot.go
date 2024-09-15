@@ -1920,6 +1920,8 @@ func (t *Tgbot) getServerUsage(chatId int64, messageID ...int) string {
 		tu.InlineKeyboardButton(t.I18nBot("tgbot.buttons.refresh")).WithCallbackData(t.encodeQuery("usage_refresh"))))
 
 	if len(messageID) > 0 {
+		// Add refresh time to the end of the message if it is a refresh
+		info += t.I18nBot("tgbot.messages.refreshedOn", "Time=="+time.Now().Format("2006-01-02 15:04:05"))
 		t.editMessageTgBot(chatId, messageID[0], info, keyboard)
 	} else {
 		t.SendMsgToTgbot(chatId, info, keyboard)
@@ -1959,9 +1961,9 @@ func (t *Tgbot) prepareServerUsageInfo() string {
 				for _, address := range addrs {
 					if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
 						if ipnet.IP.To4() != nil {
-							ipv4 += ipnet.IP.String() + " "
+							ipv4 += ipnet.IP.String() + ", "
 						} else if ipnet.IP.To16() != nil && !ipnet.IP.IsLinkLocalUnicast() {
-							ipv6 += ipnet.IP.String() + " "
+							ipv6 += ipnet.IP.String() + ", "
 						}
 					}
 				}
@@ -1979,8 +1981,7 @@ func (t *Tgbot) prepareServerUsageInfo() string {
 	info += t.I18nBot("tgbot.messages.serverMemory", "Current=="+common.FormatTraffic(int64(t.lastStatus.Mem.Current)), "Total=="+common.FormatTraffic(int64(t.lastStatus.Mem.Total)))
 	info += t.I18nBot("tgbot.messages.serverSwap", "Current=="+common.FormatTraffic(int64(t.lastStatus.Swap.Current)), "Total=="+common.FormatTraffic(int64(t.lastStatus.Swap.Total)))
 	info += t.I18nBot("tgbot.messages.onlinesCount", "Count=="+fmt.Sprint(len(onlines)))
-	info += t.I18nBot("tgbot.messages.tcpCount", "Count=="+strconv.Itoa(t.lastStatus.TcpCount))
-	info += t.I18nBot("tgbot.messages.udpCount", "Count=="+strconv.Itoa(t.lastStatus.UdpCount))
+	info += t.I18nBot("tgbot.messages.connections", "tcpCount=="+strconv.Itoa(t.lastStatus.TcpCount), "udpCount=="+strconv.Itoa(t.lastStatus.UdpCount))
 	info += t.I18nBot("tgbot.messages.traffic", "Total=="+common.FormatTraffic(int64(t.lastStatus.NetTraffic.Sent+t.lastStatus.NetTraffic.Recv)), "Upload=="+common.FormatTraffic(int64(t.lastStatus.NetTraffic.Sent)), "Download=="+common.FormatTraffic(int64(t.lastStatus.NetTraffic.Recv)))
 	info += t.I18nBot("tgbot.messages.xrayStatus", "State=="+fmt.Sprint(t.lastStatus.Xray.State))
 	return info
