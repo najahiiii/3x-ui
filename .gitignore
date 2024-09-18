@@ -14,3 +14,6 @@ dist/
 release/
 /release.sh
 /x-ui
+
+# Personal
+build.sh
