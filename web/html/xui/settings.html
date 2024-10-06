@@ -402,7 +402,7 @@
     </a-layout>
   </a-layout>
 {{template "js" .}}
-<script src="{{ .base_path }}assets/js/model/setting.js?{{ .cur_ver }}"></script>
+<script data-cfasync="false" src="{{ .base_path }}assets/js/model/setting.js?{{ .cur_ver }}"></script>
 {{template "component/themeSwitcher" .}}
 {{template "component/password" .}}
 {{template "component/setting"}}
