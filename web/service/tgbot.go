@@ -1044,7 +1044,6 @@ func (t *Tgbot) getServerUsage(chatId int64, messageID ...int) string {
 
 	if len(messageID) > 0 {
 		// Add refresh time to the end of the message if it is a refresh
-		info += "\r\n"
 		info += t.I18nBot("tgbot.messages.refreshedOn", "Time=="+time.Now().Format("2006-01-02 15:04:05"))
 		t.editMessageTgBot(chatId, messageID[0], info, keyboard)
 	} else {
