@@ -1093,16 +1093,33 @@ func (t *Tgbot) prepareServerUsageInfo() string {
 
 		info += t.I18nBot("tgbot.messages.ipv4", "IPv4=="+IsEmpty(ipv4))
 		info += t.I18nBot("tgbot.messages.ipv6", "IPv6=="+IsEmpty(ipv6))
+		info += t.I18nBot("tgbot.messages.isp", "ISP=="+t.lastStatus.ISP.Name)
+		info += t.I18nBot("tgbot.messages.rdns", "RDNS=="+IsEmpty(t.lastStatus.ISP.Reverse))
 	}
 
-	info += t.I18nBot("tgbot.messages.serverUpTime", "UpTime=="+strconv.FormatUint(t.lastStatus.Uptime/86400, 10), "Unit=="+t.I18nBot("tgbot.days"))
+	info += t.I18nBot("tgbot.messages.uptime", "SystemUpTime=="+t.FormatDuration(t.lastStatus.Uptime), "XrayUptime=="+t.FormatDuration(t.lastStatus.AppStats.Uptime))
 	info += t.I18nBot("tgbot.messages.serverLoad", "Load1=="+strconv.FormatFloat(t.lastStatus.Loads[0], 'f', 2, 64), "Load2=="+strconv.FormatFloat(t.lastStatus.Loads[1], 'f', 2, 64), "Load3=="+strconv.FormatFloat(t.lastStatus.Loads[2], 'f', 2, 64))
 	info += t.I18nBot("tgbot.messages.serverMemory", "Current=="+common.FormatTraffic(int64(t.lastStatus.Mem.Current)), "Total=="+common.FormatTraffic(int64(t.lastStatus.Mem.Total)))
+	info += t.I18nBot("tgbot.messages.serverSwap", "Current=="+common.FormatTraffic(int64(t.lastStatus.Swap.Current)), "Total=="+common.FormatTraffic(int64(t.lastStatus.Swap.Total)))
 	info += t.I18nBot("tgbot.messages.onlinesCount", "Count=="+fmt.Sprint(len(onlines)))
 	info += t.I18nBot("tgbot.messages.connections", "tcpCount=="+strconv.Itoa(t.lastStatus.TcpCount), "udpCount=="+strconv.Itoa(t.lastStatus.UdpCount))
 	info += t.I18nBot("tgbot.messages.traffic", "Total=="+common.FormatTraffic(int64(t.lastStatus.NetTraffic.Sent+t.lastStatus.NetTraffic.Recv)), "Upload=="+common.FormatTraffic(int64(t.lastStatus.NetTraffic.Sent)), "Download=="+common.FormatTraffic(int64(t.lastStatus.NetTraffic.Recv)))
 	info += t.I18nBot("tgbot.messages.xrayStatus", "State=="+fmt.Sprint(t.lastStatus.Xray.State))
 	return info
+}
+
+func (t *Tgbot) FormatDuration(seconds uint64) string {
+	if seconds >= 86400 {
+		days := seconds / 86400
+		return fmt.Sprintf("%d %s", days, t.I18nBot("tgbot.days"))
+	} else if seconds >= 3600 {
+		hours := seconds / 3600
+		return fmt.Sprintf("%d %s", hours, t.I18nBot("tgbot.hours"))
+	} else if seconds >= 60 {
+		minutes := seconds / 60
+		return fmt.Sprintf("%d %s", minutes, t.I18nBot("tgbot.minutes"))
+	}
+	return fmt.Sprintf("%d %s", seconds, t.I18nBot("tgbot.seconds"))
 }
 
 func IsEmpty(s string) string {
