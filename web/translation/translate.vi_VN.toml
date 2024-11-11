@@ -554,6 +554,7 @@
 "serverUpTime" = "⏳ Thời gian hoạt động của máy chủ: {{ .UpTime }} {{ .Unit }}\r\n"
 "serverLoad" = "📈 Tải máy chủ: {{ .Load1 }}, {{ .Load2 }}, {{ .Load3 }}\r\n"
 "serverMemory" = "📋 Bộ nhớ máy chủ: {{ .Current }}/{{ .Total }}\r\n"
+"serverSwap" = "💾 SWAP: {{ .Current }}/{{ .Total }}\r\n"
 "connections" = "🔌 Số lượng giao thức: {{ .tcpCount }} (TCP) | {{.udpCount}} (UDP)\r\n"
 "traffic" = "🚦 Lưu lượng: {{ .Total }} (↑{{ .Upload }},↓{{ .Download }})\r\n"
 "xrayStatus" = "ℹ️ Trạng thái Xray: {{ .State }}\r\n"

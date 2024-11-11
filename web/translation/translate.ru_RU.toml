@@ -554,6 +554,7 @@
 "serverUpTime" = "⏳ Время работы сервера: {{ .UpTime }} {{ .Unit }}\r\n"
 "serverLoad" = "📈 Загрузка сервера: {{ .Load1 }}, {{ .Load2 }}, {{ .Load3 }}\r\n"
 "serverMemory" = "📋 Память сервера: {{ .Current }}/{{ .Total }}\r\n"
+"serverSwap" = "💾 SWAP: {{ .Current }}/{{ .Total }}\r\n"
 "connections" = "🔌 Количество протоколов: {{ .tcpCount }} (TCP) | {{.udpCount}} (UDP)\r\n"
 "traffic" = "🚦 Трафик: {{ .Total }} (↑{{ .Upload }},↓{{ .Download }})\r\n"
 "xrayStatus" = "ℹ️ Состояние Xray: {{ .State }}\r\n"
