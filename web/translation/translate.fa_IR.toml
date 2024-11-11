@@ -513,6 +513,7 @@
 "serverUpTime" = "⏳ مدت‌کارکردسیستم: {{ .UpTime }} {{ .Unit }}\r\n"
 "serverLoad" = "📈 بارسیستم: {{ .Load1 }}, {{ .Load2 }}, {{ .Load3 }}\r\n"
 "serverMemory" = "📋 RAM: {{ .Current }}/{{ .Total }}\r\n"
+"serverSwap" = "💾 SWAP: {{ .Current }}/{{ .Total }}\r\n"
 "connections" = "🔌 Protocol: {{ .tcpCount }} (TCP) | {{.udpCount}} (UDP)\r\n"
 "traffic" = "🚦 ترافیک: {{ .Total }} (↑{{ .Upload }},↓{{ .Download }})\r\n"
 "xrayStatus" = "ℹ️ وضعیت‌ایکس‌ری: {{ .State }}\r\n"
