@@ -308,20 +308,15 @@ func (t *Tgbot) answerCommand(message *telego.Message, chatId int64, isAdmin boo
 	case "restart":
 		onlyMessage = true
 		if isAdmin {
-			if len(commandArgs) == 0 {
-				if t.xrayService.IsXrayRunning() {
-					err := t.xrayService.RestartXray(true)
-					if err != nil {
-						msg += t.I18nBot("tgbot.commands.restartFailed", "Error=="+err.Error())
-					} else {
-						msg += t.I18nBot("tgbot.commands.restartSuccess")
-					}
+			if t.xrayService.IsXrayRunning() {
+				err := t.xrayService.RestartXray(true)
+				if err != nil {
+					msg += t.I18nBot("tgbot.commands.restartFailed", "Error=="+err.Error())
 				} else {
-					msg += t.I18nBot("tgbot.commands.xrayNotRunning")
+					msg += t.I18nBot("tgbot.commands.restartSuccess")
 				}
 			} else {
-				handleUnknownCommand()
-				msg += t.I18nBot("tgbot.commands.restartUsage")
+				msg += t.I18nBot("tgbot.commands.xrayNotRunning")
 			}
 		} else {
 			handleUnknownCommand()
