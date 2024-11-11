@@ -78,6 +78,17 @@ type Status struct {
 		IPv4 string `json:"ipv4"`
 		IPv6 string `json:"ipv6"`
 	} `json:"publicIP"`
+	ISP struct {
+		Status      string `json:"status"`
+		Message     string `json:"message"`
+		CountryCode string `json:"countryCode"`
+		Name         string `json:"isp"`
+		Org         string `json:"org"`
+		AS          string `json:"as"`
+		ASName      string `json:"asname"`
+		Reverse     string `json:"reverse"`
+		Query       string `json:"query"`
+	} `json:"isp"`
 	AppStats struct {
 		Threads uint32 `json:"threads"`
 		Mem     uint64 `json:"mem"`
@@ -112,6 +123,39 @@ func getPublicIP(url string) string {
 	}
 
 	return ipString
+}
+
+type IPAPIResponse struct {
+	Status      string `json:"status"`
+	Message     string `json:"message"`
+	CountryCode string `json:"countryCode"`
+	ISP         string `json:"isp"`
+	Org         string `json:"org"`
+	AS          string `json:"as"`
+	ASName      string `json:"asname"`
+	Reverse     string `json:"reverse"`
+	Query       string `json:"query"`
+}
+
+func fetchIPAPI(ip string) (*IPAPIResponse, error) {
+	url := fmt.Sprintf("http://ip-api.com/json/%s?fields=status,message,countryCode,isp,org,as,asname,reverse,query", ip)
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var result IPAPIResponse
+	if err := json.Unmarshal(body, &result); err != nil {
+		return nil, err
+	}
+
+	return &result, nil
 }
 
 func (s *ServerService) GetStatus(lastStatus *Status) *Status {
@@ -219,6 +263,25 @@ func (s *ServerService) GetStatus(lastStatus *Status) *Status {
 
 	status.PublicIP.IPv4 = getPublicIP("https://api.ipify.org")
 	status.PublicIP.IPv6 = getPublicIP("https://api6.ipify.org")
+	
+	// Get ISP info
+	ip := status.PublicIP.IPv4
+	if ip != "N/A" {
+		ipAPIResponse, err := fetchIPAPI(ip)
+		if err != nil {
+			logger.Warning("get ip api failed:", err)
+		} else {
+			status.ISP.Status = ipAPIResponse.Status
+			status.ISP.Message = ipAPIResponse.Message
+			status.ISP.CountryCode = ipAPIResponse.CountryCode
+			status.ISP.Name = ipAPIResponse.ISP
+			status.ISP.Org = ipAPIResponse.Org
+			status.ISP.AS = ipAPIResponse.AS
+			status.ISP.ASName = ipAPIResponse.ASName
+			status.ISP.Reverse = ipAPIResponse.Reverse
+			status.ISP.Query = ipAPIResponse.Query
+		}
+	}
 
 	if s.xrayService.IsXrayRunning() {
 		status.Xray.State = Running
