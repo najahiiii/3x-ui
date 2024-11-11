@@ -591,7 +591,6 @@
 "getID" = "🆔 Ваш User ID: <code>{{ .ID }}</code>"
 "helpAdminCommands" = "🔃 Для перезапуска Xray Core:\r\n<code>/restart</code>\r\n\r\n🔎 Для поиска клиента по email:\r\n<code>/usage [Email]</code>\r\n\r\n📊 Для поиска инбаундов (со статистикой клиентов):\r\n<code>/inbound [имя подключения]</code>\r\n\r\n🆔 Ваш Telegram User ID:\r\n<code>/id</code>"
 "helpClientCommands" = "💲 Для просмотра информации о вашей подписке используйте команду:\r\n<code>/usage [Email]</code>\r\n\r\n🆔 Ваш Telegram User ID:\r\n<code>/id</code>"
-"restartUsage" = "\r\n\r\n<code>/restart</code>"
 "restartSuccess" = "✅ Ядро Xray успешно перезапущено."
 "restartFailed" = "❗ Ошибка при перезапуске Xray-core.\r\n\r\n<code>Ошибка: {{ .Error }}</code>."
 "xrayNotRunning" = "❗ Xray Core не запущен."
