@@ -944,6 +944,10 @@
                     { label: 'Netflix', value: 'geosite:netflix' },
                     { label: 'Reddit', value: 'geosite:reddit' },
                     { label: 'Speedtest', value: 'geosite:speedtest' },
+                    { label: 'telegram', value: 'geosite:telegram' },
+                    { label: 'twitch', value: 'geosite:twitch' },
+                    { label: 'Category Dev', value: 'geosite:category-dev' },
+                    { label: 'Category Porns', value: 'geosite:category-porn' },
                 ],
                 familyProtectDNS: {
                     "servers": [
@@ -957,16 +961,16 @@
             },
             defaultObservatory: {
                 subjectSelector: [],
-                probeURL: "http://www.google.com/gen_204",
+                probeURL: "http://www.gstatic.com/generate_204",
                 probeInterval: "10m",
                 enableConcurrency: true
             },
             defaultBurstObservatory: {
                 subjectSelector: [],
                 pingConfig: {
-                    destination: "http://www.google.com/gen_204",
+                    destination: "http://www.gstatic.com/generate_204",
                     interval: "30m",
-                    connectivity: "http://connectivitycheck.platform.hicloud.com/generate_204",
+                    connectivity: "http://www.gstatic.com/generate_204",
                     timeout: "10s",
                     sampling: 2
                 }
