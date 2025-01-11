@@ -315,6 +315,8 @@
         },
         IPsOptions: [
           { label: 'Private IPs', value: 'geoip:private' },
+          { label: 'Telegram IPs', value: 'geoip:telegram'},
+          { label: 'Cloudflare IPs', value: 'geoip:cloudflare'},
           { label: '🇮🇷 Iran', value: 'ext:geoip_IR.dat:ir' },
           { label: '🇨🇳 China', value: 'geoip:cn' },
           { label: '🇷🇺 Russia', value: 'ext:geoip_RU.dat:ru' },
@@ -365,20 +367,24 @@
           { label: 'Netflix', value: 'geosite:netflix' },
           { label: 'Reddit', value: 'geosite:reddit' },
           { label: 'Speedtest', value: 'geosite:speedtest' },
+          { label: 'Telegram', value: 'geosite:telegram' },
+          { label: 'Twitch', value: 'geosite:twitch' },
+          { label: 'Category Dev', value: 'geosite:category-dev' },
+          { label: 'Category Porns', value: 'geosite:category-porn' },
         ]
       },
       defaultObservatory: {
         subjectSelector: [],
-        probeURL: "http://www.google.com/gen_204",
+        probeURL: "http://www.gstatic.com/generate_204",
         probeInterval: "10m",
         enableConcurrency: true
       },
       defaultBurstObservatory: {
         subjectSelector: [],
         pingConfig: {
-          destination: "http://www.google.com/gen_204",
+          destination: "http://www.gstatic.com/generate_204",
           interval: "30m",
-          connectivity: "http://connectivitycheck.platform.hicloud.com/generate_204",
+          connectivity: "http://www.gstatic.com/generate_204",
           timeout: "10s",
           sampling: 2
         }
