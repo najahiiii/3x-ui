@@ -74,7 +74,7 @@ before_show_menu() {
 }
 
 install() {
-    bash <(curl -Ls https://raw.githubusercontent.com/MHSanaei/3x-ui/main/install.sh)
+    bash <(curl -Ls https://raw.githubusercontent.com/najahiiii/3x-ui/main/install.sh)
     if [[ $? == 0 ]]; then
         if [[ $# == 0 ]]; then
             start
@@ -93,7 +93,7 @@ update() {
         fi
         return 0
     fi
-    bash <(curl -Ls https://raw.githubusercontent.com/MHSanaei/3x-ui/main/install.sh)
+    bash <(curl -Ls https://raw.githubusercontent.com/najahiiii/3x-ui/main/install.sh)
     if [[ $? == 0 ]]; then
         LOGI "Update is complete, Panel has automatically restarted "
         before_show_menu
@@ -111,7 +111,7 @@ update_menu() {
         return 0
     fi
 
-    wget -O /usr/bin/x-ui https://raw.githubusercontent.com/MHSanaei/3x-ui/main/x-ui.sh
+    wget -O /usr/bin/x-ui https://raw.githubusercontent.com/najahiiii/3x-ui/main/x-ui.sh
     chmod +x /usr/local/x-ui/x-ui.sh
     chmod +x /usr/bin/x-ui
 
@@ -155,11 +155,12 @@ uninstall() {
     fi
     systemctl stop x-ui
     systemctl disable x-ui
-    rm /etc/systemd/system/x-ui.service -f
+    rm /usr/lib/systemd/system/x-ui.service -f
     systemctl daemon-reload
     systemctl reset-failed
     rm /etc/x-ui/ -rf
     rm /usr/local/x-ui/ -rf
+    rm /usr/bin/x-ui
 
     echo ""
     echo -e "Uninstalled Successfully.\n"
@@ -514,7 +515,7 @@ enable_bbr() {
 }
 
 update_shell() {
-    wget -O /usr/bin/x-ui -N https://github.com/MHSanaei/3x-ui/raw/main/x-ui.sh
+    wget -O /usr/bin/x-ui -N https://github.com/najahiiii/3x-ui/raw/main/x-ui.sh
     if [[ $? != 0 ]]; then
         echo ""
         LOGE "Failed to download script, Please check whether the machine can connect Github"
@@ -1203,7 +1204,7 @@ ssl_cert_issue_CF() {
             LOGI "Certificate issued successfully, Installing..."
         fi
 
-         # Install the certificate
+        # Install the certificate
         certPath="/root/cert/${CF_Domain}"
         if [ -d "$certPath" ]; then
             rm -rf ${certPath}
@@ -1230,7 +1231,7 @@ ssl_cert_issue_CF() {
                 LOGI "Reloadcmd is: systemctl reload nginx ; x-ui restart"
                 reloadCmd="systemctl reload nginx ; x-ui restart"
                 ;;
-            2)  
+            2)
                 LOGD "It's recommended to put x-ui restart at the end, so it won't raise an error if other services fails"
                 read -rp "Please enter your reloadcmd (example: systemctl reload nginx ; x-ui restart): " reloadCmd
                 LOGI "Your reloadcmd is: ${reloadCmd}"

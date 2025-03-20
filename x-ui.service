@@ -1,7 +1,7 @@
 [Unit]
-Description=x-ui Service
-After=network.target
-Wants=network.target
+Description=3X-UI Service
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 Environment="XRAY_VMESS_AEAD_FORCED=false"

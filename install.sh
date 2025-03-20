@@ -139,47 +139,38 @@ config_after_install() {
 }
 
 install_x-ui() {
-    cd /usr/local/
+    cd /usr/local/ || exit
 
-    if [ $# == 0 ]; then
-        tag_version=$(curl -Ls "https://api.github.com/repos/MHSanaei/3x-ui/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
-        if [[ ! -n "$tag_version" ]]; then
-            echo -e "${red}Failed to fetch x-ui version, it may be due to GitHub API restrictions, please try it later${plain}"
-            exit 1
-        fi
-        echo -e "Got x-ui latest version: ${tag_version}, beginning the installation..."
-        wget -N -O /usr/local/x-ui-linux-$(arch).tar.gz https://github.com/MHSanaei/3x-ui/releases/download/${tag_version}/x-ui-linux-$(arch).tar.gz
-        if [[ $? -ne 0 ]]; then
-            echo -e "${red}Downloading x-ui failed, please be sure that your server can access GitHub ${plain}"
-            exit 1
-        fi
-    else
-        tag_version=$1
+    tag_version=${1:-$(curl -Ls "https://api.github.com/repos/najahiiii/3x-ui/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')}
+
+    if [[ -z "$tag_version" ]]; then
+        echo -e "${red}Failed to fetch x-ui version. Try again later.${plain}"
+        exit 1
+    fi
+
+    if [[ -n "$1" ]]; then
+        min_version="25.03.20"
         tag_version_numeric=${tag_version#v}
-        min_version="2.3.5"
 
         if [[ "$(printf '%s\n' "$min_version" "$tag_version_numeric" | sort -V | head -n1)" != "$min_version" ]]; then
-            echo -e "${red}Please use a newer version (at least v2.3.5). Exiting installation.${plain}"
-            exit 1
-        fi
-
-        url="https://github.com/MHSanaei/3x-ui/releases/download/${tag_version}/x-ui-linux-$(arch).tar.gz"
-        echo -e "Beginning to install x-ui $1"
-        wget -N -O /usr/local/x-ui-linux-$(arch).tar.gz ${url}
-        if [[ $? -ne 0 ]]; then
-            echo -e "${red}Download x-ui $1 failed, please check if the version exists ${plain}"
+            echo -e "${red}Please use at least v${min_version}. Exiting.${plain}"
             exit 1
         fi
     fi
 
-    if [[ -e /usr/local/x-ui/ ]]; then
-        systemctl stop x-ui
-        rm /usr/local/x-ui/ -rf
-    fi
+    echo -e "Installing x-ui version: ${tag_version}..."
+    url="https://github.com/najahiiii/3x-ui/releases/download/${tag_version}/x-ui-linux-$(arch)-${tag_version}.tar.gz"
 
-    tar zxvf x-ui-linux-$(arch).tar.gz
-    rm x-ui-linux-$(arch).tar.gz -f
-    cd x-ui
+    wget -N -O "x-ui-linux-$(arch)-${tag_version}.tar.gz" "$url" || {
+        echo -e "${red}Download failed. Check GitHub access or version availability.${plain}"
+        exit 1
+    }
+
+    [[ -d /usr/local/x-ui/ ]] && systemctl stop x-ui && rm -rf /usr/local/x-ui/
+
+    tar zxvf "x-ui-linux-$(arch)-${tag_version}.tar.gz"
+    rm -f "x-ui-linux-$(arch)-${tag_version}.tar.gz"
+    cd x-ui || exit
     chmod +x x-ui
 
     # Check the system's architecture and rename the file accordingly
@@ -188,11 +179,10 @@ install_x-ui() {
         chmod +x bin/xray-linux-arm
     fi
 
-    chmod +x x-ui bin/xray-linux-$(arch)
-    cp -f x-ui.service /etc/systemd/system/
-    wget -O /usr/bin/x-ui https://raw.githubusercontent.com/MHSanaei/3x-ui/main/x-ui.sh
+    chmod +x bin/xray-linux-$(arch)
+    mv -f x-ui.service /usr/lib/systemd/system/
     chmod +x /usr/local/x-ui/x-ui.sh
-    chmod +x /usr/bin/x-ui
+    mv /usr/local/x-ui/x-ui.sh /usr/bin/x-ui
     config_after_install
 
     systemctl daemon-reload
