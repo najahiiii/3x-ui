@@ -145,6 +145,9 @@
           <td>ID</td>
           <td>
             <a-tag>[[ infoModal.clientSettings.id ]]</a-tag>
+            <a-tooltip title='{{ i18n "copy" }}'>
+              <a-button :style="{ minWidth: '24px' }" size="small" icon="snippets" @click="copy(infoModal.clientSettings.id)"></a-button>
+            </a-tooltip>
           </td>
         </tr>
         <tr v-if="dbInbound.isVMess">
